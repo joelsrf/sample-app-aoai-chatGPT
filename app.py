@@ -1,3 +1,5 @@
+from flask import Flask, render_template
+from flask_basicauth import BasicAuth
 import copy
 import json
 import os
@@ -35,6 +37,19 @@ from backend.utils import (
     convert_to_pf_format,
     format_pf_non_streaming_response,
 )
+
+app = Flask(__name__)
+
+# Konfiguration
+app.config['BASIC_AUTH_USERNAME'] = 'admin'
+app.config['BASIC_AUTH_PASSWORD'] = 'secret'
+basic_auth = BasicAuth(app)
+
+# Beispiel-Route mit Basic Auth
+@app.route('/')
+@basic_auth.required
+def index():
+    return "Willkommen, authentifizierter Benutzer!"
 
 bp = Blueprint("routes", __name__, static_folder="static", template_folder="static")
 
