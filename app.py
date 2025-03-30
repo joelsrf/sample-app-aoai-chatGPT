@@ -1,4 +1,3 @@
-from quart import Quart, request, Response
 import copy
 import json
 import os
@@ -16,6 +15,7 @@ from quart import (
     send_from_directory,
     render_template,
     current_app,
+    Response,
 )
 
 from openai import AsyncAzureOpenAI
@@ -51,8 +51,8 @@ def create_app():
     app.register_blueprint(bp)
     app.config["TEMPLATES_AUTO_RELOAD"] = True
 
-     # Basic Auth check (define inside create_app to access app)
-     def unauthorized():
+    # Basic Auth check
+    def unauthorized():
         return Response(
             "Unauthorized", 401,
             {"WWW-Authenticate": 'Basic realm="Login required"'}
@@ -76,8 +76,6 @@ def create_app():
 
         return None
 
-
-    # End basic auth
     
     @app.before_serving
     async def init():
