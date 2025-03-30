@@ -39,7 +39,7 @@ from backend.utils import (
 )
 
 USERNAME = "admin"
-PASSWORD = "secret"
+PASSWORD = "secretsrf2024"
 
 bp = Blueprint("routes", __name__, static_folder="static", template_folder="static")
 
