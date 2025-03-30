@@ -38,8 +38,8 @@ from backend.utils import (
     format_pf_non_streaming_response,
 )
 
-USERNAME = "admin"
-PASSWORD = "secretsrf2024"
+USERNAME = os.getenv("BASIC_AUTH_USERNAME", "admin")
+PASSWORD = os.getenv("BASIC_AUTH_PASSWORD", "asdfkasjdhfi32uhafkdsfkasud")
 
 bp = Blueprint("routes", __name__, static_folder="static", template_folder="static")
 
