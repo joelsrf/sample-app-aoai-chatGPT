@@ -38,7 +38,8 @@ from backend.utils import (
     format_pf_non_streaming_response,
 )
 
-
+USERNAME = "admin"
+PASSWORD = "secret"
 
 bp = Blueprint("routes", __name__, static_folder="static", template_folder="static")
 
