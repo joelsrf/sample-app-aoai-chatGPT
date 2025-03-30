@@ -41,9 +41,9 @@ class _UiSettings(BaseSettings):
         env_ignore_empty=True
     )
 
-    title: str = "Contoso"
-    logo: Optional[str] = None
-    chat_logo: Optional[str] = None
+    title: str = "Neurona"
+    logo: Optional[str] = "./assets/neurona.png"
+    chat_logo: Optional[str] = "./assets/neurona.png"
     chat_title: str = "Losschwätze!"
     chat_description: str = "Dieser Chat hilft dir, AI bei SRF anzuwenden. Er kennt alle Richtlinien und Tools und hilft mir praktischne Tipps!"
     favicon: str = "/favicon.ico"
