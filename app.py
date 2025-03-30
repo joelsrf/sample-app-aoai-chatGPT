@@ -38,18 +38,7 @@ from backend.utils import (
     format_pf_non_streaming_response,
 )
 
-app = Flask(__name__)
 
-# Konfiguration
-app.config['BASIC_AUTH_USERNAME'] = 'admin'
-app.config['BASIC_AUTH_PASSWORD'] = 'secret'
-basic_auth = BasicAuth(app)
-
-# Beispiel-Route mit Basic Auth
-@app.route('/')
-@basic_auth.required
-def index():
-    return "Willkommen, authentifizierter Benutzer!"
 
 bp = Blueprint("routes", __name__, static_folder="static", template_folder="static")
 
@@ -60,6 +49,27 @@ def create_app():
     app = Quart(__name__)
     app.register_blueprint(bp)
     app.config["TEMPLATES_AUTO_RELOAD"] = True
+
+     # Basic Auth check (define inside create_app to access app)
+    import base64
+    from quart import request, Response
+
+    async def check_auth():
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Basic '):
+            return False
+        encoded_credentials = auth_header.split(' ')[1]
+        decoded = base64.b64decode(encoded_credentials).decode('utf-8')
+        username, password = decoded.split(':')
+        return username == "admin" and password == "secret"
+
+    @app.route("/")
+    async def index():
+        if not await check_auth():
+            return Response("Unauthorized", 401, {'WWW-Authenticate': 'Basic realm="Login Required"'})
+        return "Willkommen, authentifizierter Benutzer!"
+
+    # End basic auth
     
     @app.before_serving
     async def init():
