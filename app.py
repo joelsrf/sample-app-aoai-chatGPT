@@ -51,7 +51,8 @@ def create_app():
     app.config["TEMPLATES_AUTO_RELOAD"] = True
 
      # Basic Auth check (define inside create_app to access app)
-    
+    '''
+
 
 USERNAME = "admin"
 PASSWORD = "secret"
@@ -79,6 +80,7 @@ async def basic_auth():
         return unauthorized()
 
     return None  # <<< wichtig
+'''
 
     # End basic auth
     
