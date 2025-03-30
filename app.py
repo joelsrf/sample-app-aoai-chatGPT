@@ -51,36 +51,30 @@ def create_app():
     app.config["TEMPLATES_AUTO_RELOAD"] = True
 
      # Basic Auth check (define inside create_app to access app)
-    '''
+     def unauthorized():
+        return Response(
+            "Unauthorized", 401,
+            {"WWW-Authenticate": 'Basic realm="Login required"'}
+        )
 
+    @app.before_request
+    async def basic_auth():
+        auth = request.headers.get("Authorization")
+        if not auth or not auth.startswith("Basic "):
+            return unauthorized()
 
-USERNAME = "admin"
-PASSWORD = "secret"
+        try:
+            encoded_credentials = auth.split(" ", 1)[1].strip()
+            decoded_credentials = base64.b64decode(encoded_credentials).decode("utf-8")
+            username, password = decoded_credentials.split(":", 1)
+        except Exception:
+            return unauthorized()
 
-def unauthorized():
-    return Response(
-        "Unauthorized", 401,
-        {"WWW-Authenticate": 'Basic realm="Login required"'}
-    )
+        if username != USERNAME or password != PASSWORD:
+            return unauthorized()
 
-@app.before_request
-async def basic_auth():
-    auth = request.headers.get("Authorization")
-    if not auth or not auth.startswith("Basic "):
-        return unauthorized()
+        return None
 
-    try:
-        encoded_credentials = auth.split(" ", 1)[1].strip()
-        decoded_credentials = base64.b64decode(encoded_credentials).decode("utf-8")
-        username, password = decoded_credentials.split(":", 1)
-    except Exception:
-        return unauthorized()
-
-    if username != USERNAME or password != PASSWORD:
-        return unauthorized()
-
-    return None  # <<< wichtig
-'''
 
     # End basic auth
     
