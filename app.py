@@ -52,6 +52,7 @@ def create_app():
 
      # Basic Auth check (define inside create_app to access app)
     
+
 USERNAME = "admin"
 PASSWORD = "secret"
 
@@ -67,12 +68,17 @@ async def basic_auth():
     if not auth or not auth.startswith("Basic "):
         return unauthorized()
 
-    encoded_credentials = auth.split(" ", 1)[1].strip()
-    decoded_credentials = base64.b64decode(encoded_credentials).decode("utf-8")
-    username, password = decoded_credentials.split(":", 1)
+    try:
+        encoded_credentials = auth.split(" ", 1)[1].strip()
+        decoded_credentials = base64.b64decode(encoded_credentials).decode("utf-8")
+        username, password = decoded_credentials.split(":", 1)
+    except Exception:
+        return unauthorized()
 
     if username != USERNAME or password != PASSWORD:
         return unauthorized()
+
+    return None  # <<< wichtig
 
     # End basic auth
     
