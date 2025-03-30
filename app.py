@@ -1,11 +1,11 @@
-from flask import Flask, render_template
-from flask_basicauth import BasicAuth
+from quart import Quart, request, Response
 import copy
 import json
 import os
 import logging
 import uuid
 import httpx
+import base64
 import asyncio
 from quart import (
     Blueprint,
@@ -51,23 +51,28 @@ def create_app():
     app.config["TEMPLATES_AUTO_RELOAD"] = True
 
      # Basic Auth check (define inside create_app to access app)
-    import base64
-    from quart import request, Response
+    
+USERNAME = "admin"
+PASSWORD = "secret"
 
-    async def check_auth():
-        auth_header = request.headers.get('Authorization')
-        if not auth_header or not auth_header.startswith('Basic '):
-            return False
-        encoded_credentials = auth_header.split(' ')[1]
-        decoded = base64.b64decode(encoded_credentials).decode('utf-8')
-        username, password = decoded.split(':')
-        return username == "admin" and password == "secret"
+def unauthorized():
+    return Response(
+        "Unauthorized", 401,
+        {"WWW-Authenticate": 'Basic realm="Login required"'}
+    )
 
-    @app.route("/")
-    async def index():
-        if not await check_auth():
-            return Response("Unauthorized", 401, {'WWW-Authenticate': 'Basic realm="Login Required"'})
-        return "Willkommen, authentifizierter Benutzer!"
+@app.before_request
+async def basic_auth():
+    auth = request.headers.get("Authorization")
+    if not auth or not auth.startswith("Basic "):
+        return unauthorized()
+
+    encoded_credentials = auth.split(" ", 1)[1].strip()
+    decoded_credentials = base64.b64decode(encoded_credentials).decode("utf-8")
+    username, password = decoded_credentials.split(":", 1)
+
+    if username != USERNAME or password != PASSWORD:
+        return unauthorized()
 
     # End basic auth
     
